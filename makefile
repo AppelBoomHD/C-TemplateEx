@@ -18,9 +18,7 @@ LDFLAGS += -L$(DEPDIR) -l$(LIBNAME)
 # We recursively scan the entire directory for source files.
 CXX_SOURCES = $(patsubst ./%,$(DEPDIR)/%,$(shell find . -type f -name \*$(CPP_EXT)))
 CXX_OBJECTS = $(patsubst %$(CPP_EXT),%.o,$(CXX_SOURCES))
-# CXX_OBJECTS = $(patsubst src%,%,$(CXX_OBJECTS_1))
 CXX_OBJDEPS = $(patsubst %$(CPP_EXT),%.dep,$(CXX_SOURCES))
-# CXX_OBJ = $(patsubst ./%,$(DEPDIR)/%,$(shell find . -type d -name \*$(CPP_EXT)))
 
 # This command finds the first of .ccp, .cc or .C, whichever you use.
 # Stick to one extension per project though. A Makefile that can handle multiple
@@ -123,7 +121,7 @@ clean:
 ifneq (,$(wildcard $(DEPDIR)))
 
     # In that case, find all .dep-files in $(DEPDIR) and include them.
-    FOUND_CXX_DEPS = $(shell find . $(DEPDIR) -name \*.dep)
+    FOUND_CXX_DEPS = $(shell find $(DEPDIR) -name \*.dep)
 
     # They list the dependencies of source files on the headers they include,
     # which ensures that sources that include foo.hh have their objects rebuilt
