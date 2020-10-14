@@ -93,7 +93,7 @@ $(CXX_OBJECTS): ACTION = compile
 $(DEPDIR):
 	mkdir $@
 
-buildgraph.dot: all
+$(DEPDIR)/buildgraph.dot: all
 	echo "digraph " > $@
 	echo "{" >> $@
 	echo "rankdir = LR;" >> $@
@@ -102,7 +102,7 @@ buildgraph.dot: all
 	echo "}" >> $@
 	cat $@
 
-show: buildgraph.dot
+show: $(DEPDIR)/buildgraph.dot
 	xdot $<
 
 .PHONY: show
