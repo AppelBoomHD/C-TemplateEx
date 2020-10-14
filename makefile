@@ -16,8 +16,8 @@ PROGRAMS = $(CXX_PROGRAMS)
 LDFLAGS += -L$(DEPDIR) -l$(LIBNAME)
 
 # We recursively scan the entire directory for source files.
-CXX_SOURCES = $(patsubst ./%,$(DEPDIR)/%,$(shell find . -type f -name \*$(CPP_EXT)))
-CXX_OBJECTS = $(patsubst %$(CPP_EXT),%.o,$(CXX_SOURCES))
+CXX_SOURCES = $(patsubst ./%,%,$(shell find . -type f -name \*$(CPP_EXT)))
+CXX_OBJECTS = $(patsubst %,$(DEPDIR)/%,$(patsubst %$(CPP_EXT),%.o,$(CXX_SOURCES)))
 CXX_OBJDEPS = $(patsubst %$(CPP_EXT),%.dep,$(CXX_SOURCES))
 
 # This command finds the first of .ccp, .cc or .C, whichever you use.
@@ -32,8 +32,7 @@ CXX_PROGRAMS = $(patsubst %$(CPP_EXT),%,$(CXX_PROG_SOURCES))
 
 # Whatever is not a program source goes into the library.
 CXX_LIBSOURCES = $(filter-out $(CXX_PROG_SOURCES),$(CXX_SOURCES))
-CXX_LIBOBJECTS = $(CXX_LIBSOURCES:$(CPP_EXT)=.o)
-# CXX_LIBOBJECTS = $(patsubst src%,%,$(CXX_LIBOBJECTS_1))
+CXX_LIBOBJECTS = $(patsubst %,$(DEPDIR)/%,$(CXX_LIBSOURCES:$(CPP_EXT)=.o))
 
 # Name of our library and the file containing it.
 LIBNAME = proj
@@ -109,7 +108,7 @@ show: $(DEPDIR)/buildgraph.dot
 
 # 'make clean' removes all generated files.
 clean:
-	rm -f $(PROGRAMS) $(CXX_OBJECTS) $(LIBRARY) buildgraph.dot $(LIBRARY)
+	rm -f $(PROGRAMS) $(CXX_OBJECTS) $(LIBRARY) $(DEPDIR)/buildgraph.dot $(LIBRARY)
 	rm -rf $(DEPDIR)
 
 # Even if a file 'clean' should exist, run the recipe anyway.
