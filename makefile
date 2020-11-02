@@ -83,7 +83,7 @@ $(LIBRARY): $(CXX_LIBOBJECTS)
 ifeq (,$(CXX_LIBOBJECTS))
 else
 	@printf "\t[Composing $@]\n"
-	$(QUIET) ar rcs $@ $<
+	$(QUIET) ar rcs $@ $^
 	@$(ADD_EDGES)
 endif
 $(LIBRARY): ACTION = gather
