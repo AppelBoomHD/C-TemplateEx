@@ -57,25 +57,35 @@ QUIET := $(if $(filter $(VERBOSE), 1 t true True TRUE y yes Yes YES),,@)
 
 # The default target (by convention called 'all') is: to build the programs.
 all: $(PROGRAMS)
-
+	
 .PHONY: all
 
 # Programs are built by linking their object files against the convenience
 # library. This is a static pattern rule:
 # https://www.gnu.org/software/make/manual/html_node/Static-Usage.html#Static-Usage
 # We don't call the linker directly. We call it through the compiler.
-$(CXX_PROGRAMS): %: $(DEPDIR)/%.o $(LIBRARY)
+$(CXX_PROGRAMS): %: $(DEPDIR)/%.o $(LIBRARY) 
+ifeq (,$(CXX_LIBOBJECTS))
+	@printf "\t[Linking $@]\n"
+	$(ENSURE_DIR)
+	$(QUIET) $(CXX) $(CXXFLAGS) -o $@ $<
+	@$(ADD_EDGES)
+else
 	@printf "\t[Linking $@]\n"
 	$(ENSURE_DIR)
 	$(QUIET) $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 	@$(ADD_EDGES)
+endif
 $(CXX_PROGRAMS): ACTION = link
 
 # The library contains all object files that don't become programs.
 $(LIBRARY): $(CXX_LIBOBJECTS)
+ifeq (,$(CXX_LIBOBJECTS))
+else
 	@printf "\t[Composing $@]\n"
-	$(QUIET) ar rcs $@ $^
+	$(QUIET) ar rcs $@ $<
 	@$(ADD_EDGES)
+endif
 $(LIBRARY): ACTION = gather
 
 # Any non-program C++ source builds an object that goes into the library.
